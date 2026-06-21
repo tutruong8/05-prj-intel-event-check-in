@@ -5,10 +5,12 @@ const attendeeInput = document.getElementById("attendeeName");
 const selectTeam = document.getElementById("teamSelect");
 const progressBar = document.getElementById("progressBar");
 const checkInBtn = document.getElementById("checkInBtn");
+const winningTeam = document.getElementById("winningTeam");
 
 //Track Attendance
 let count = 0;
-const maxCount = 50;
+//const maxCount = 50;
+const maxCount = 4; //Testing because I don't want to check in 50 people every time i test this
 
 function saveData(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
@@ -68,6 +70,28 @@ function loadList(key, listId) {
   });
 }
 
+function updateWinningTeam() {
+  const waterCount = Number(document.getElementById("waterCount").textContent);
+  const zeroCount = Number(document.getElementById("zeroCount").textContent);
+  const powerCount = Number(document.getElementById("powerCount").textContent);
+  const mostMembers = Math.max(waterCount, zeroCount, powerCount);
+
+  if (mostMembers === 0) {
+    winningTeam.textContent = "";
+    return;
+  }
+
+  if (waterCount === mostMembers && waterCount > zeroCount && waterCount > powerCount) {
+    winningTeam.textContent = "🏆 The winning team is: Team Water Wise!";
+  } else if (zeroCount === mostMembers && zeroCount > waterCount && zeroCount > powerCount) {
+    winningTeam.textContent = "🏆 The winning team is: Team Net Zero!";
+  } else if (powerCount === mostMembers && powerCount > waterCount && powerCount > zeroCount) {
+    winningTeam.textContent = "🏆 The winning team is: Team Renewables!";
+  } else {
+    winningTeam.textContent = "🏆 It's a tie between two or more teams!";
+  }
+}
+
 function loadCounts() {
   count = loadData("attendeeCount", 0);
   document.getElementById("attendeeCount").textContent = count;
@@ -85,6 +109,8 @@ function loadCounts() {
   if (count >= maxCount) {
     checkInBtn.disabled = true;
   }
+
+  updateWinningTeam();
 }
 
 window.addEventListener("DOMContentLoaded", loadCounts);
@@ -106,12 +132,7 @@ form.addEventListener("submit", function (event) {
   if (count >= maxCount) {
     alert("Maximum number of attendees have been reached!");
     checkInBtn.disabled = true;
-    const mostMembers = Math.max(
-      parseInt(document.getElementById("waterCount").textContent),
-      parseInt(document.getElementById("zeroCount").textContent),
-      parseInt(document.getElementById("powerCount").textContent),
-    );
-    
+    updateWinningTeam();
     return;
   }
 
@@ -145,11 +166,5 @@ form.addEventListener("submit", function (event) {
   greeting.textContent = message;
   console.log(message);
 
-  //When reaching max attendees, show who got the most members
-  const mostMembers = Math.max(
-    parseInt(document.getElementById("waterCount").textContent),
-    parseInt(document.getElementById("zeroCount").textContent),
-    parseInt(document.getElementById("powerCount").textContent),
-  );
   form.reset();
 });

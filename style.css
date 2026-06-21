@@ -372,6 +372,18 @@ select {
     border-bottom: 1px solid #eee;
   }
 
+   /* Winning Message */
+  #winningTeam {
+    display: block;
+    margin: 14px 0;
+    color: #0b7285;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 10px 14px;
+    background: #e0f2fe;
+    border-radius: 12px;
+  }
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .hero {
@@ -421,3 +433,4 @@ select {
     border-bottom: 1px solid #eee;
   }
 }
+
