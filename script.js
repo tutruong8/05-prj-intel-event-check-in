@@ -9,8 +9,8 @@ const winningTeam = document.getElementById("winningTeam");
 
 //Track Attendance
 let count = 0;
-//const maxCount = 50;
-const maxCount = 4; //Testing because I don't want to check in 50 people every time i test this
+const maxCount = 50;
+//const maxCount = 4; //Testing because I don't want to check in 50 people every time i test this
 
 function saveData(key, value) {
   localStorage.setItem(key, JSON.stringify(value));
