@@ -25,7 +25,8 @@ body {
 
 /* Hero Section */
 .hero {
-  background: linear-gradient(
+  background:
+    linear-gradient(
       135deg,
       rgba(0, 153, 219, 0.9) 0%,
       rgba(0, 104, 181, 0.9) 50%,
@@ -147,6 +148,14 @@ button:hover {
   box-shadow: 0 6px 15px rgba(0, 113, 197, 0.3);
 }
 
+button:disabled,
+button[disabled] {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 #checkInBtn {
   flex-shrink: 0;
   white-space: nowrap;
@@ -250,7 +259,7 @@ button .fas {
   border-radius: 8px;
   color: #333;
   margin-bottom: 15px;
-  display: none;
+  display: block;
 }
 
 .success-message {
@@ -348,6 +357,21 @@ select {
   color: #475569;
 }
 
+/* Team List */
+.attendeeList {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .attendeeList li {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+  }
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .hero {
@@ -380,5 +404,20 @@ select {
 
   .teams-grid {
     grid-template-columns: 1fr;
+  }
+
+  /* Team List */
+.attendeeList {
+    list-style: none;
+    margin: 0;
+    padding-left: 0;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+  }
+
+  .attendeeList li {
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
   }
 }

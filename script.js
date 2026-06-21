@@ -1,15 +1,98 @@
 //DOM Elements
 const form = document.getElementById("checkInForm");
+const greeting = document.getElementById("greeting");
 const attendeeInput = document.getElementById("attendeeName");
 const selectTeam = document.getElementById("teamSelect");
+const progressBar = document.getElementById("progressBar");
+const checkInBtn = document.getElementById("checkInBtn");
 
 //Track Attendance
 let count = 0;
 const maxCount = 50;
 
+function saveData(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function loadData(key, defaultValue) {
+  const raw = localStorage.getItem(key);
+  if (raw === null) {
+    return defaultValue;
+  }
+
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error("Failed to parse localStorage value:", key, error);
+    return defaultValue;
+  }
+}
+
+function getSavedList(listId) {
+  const items = document.getElementById(listId).querySelectorAll("li");
+  return Array.from(items, function (item) {
+    return item.textContent;
+  });
+}
+
+function saveCounts() {
+  saveData("attendeeCount", count);
+  saveData(
+    "waterCount",
+    Number(document.getElementById("waterCount").textContent),
+  );
+  saveData(
+    "zeroCount",
+    Number(document.getElementById("zeroCount").textContent),
+  );
+  saveData(
+    "powerCount",
+    Number(document.getElementById("powerCount").textContent),
+  );
+  saveData("waterList", getSavedList("waterList"));
+  saveData("zeroList", getSavedList("zeroList"));
+  saveData("powerList", getSavedList("powerList"));
+}
+
+function loadList(key, listId) {
+  const list = loadData(key, []);
+  if (!Array.isArray(list)) {
+    return;
+  }
+
+  const container = document.getElementById(listId);
+  list.forEach(function (name) {
+    const li = document.createElement("li");
+    li.textContent = name;
+    container.appendChild(li);
+  });
+}
+
+function loadCounts() {
+  count = loadData("attendeeCount", 0);
+  document.getElementById("attendeeCount").textContent = count;
+  document.getElementById("waterCount").textContent = loadData("waterCount", 0);
+  document.getElementById("zeroCount").textContent = loadData("zeroCount", 0);
+  document.getElementById("powerCount").textContent = loadData("powerCount", 0);
+
+  loadList("waterList", "waterList");
+  loadList("zeroList", "zeroList");
+  loadList("powerList", "powerList");
+
+  const percent = Math.round((count / maxCount) * 100) + "%";
+  progressBar.style.width = percent;
+
+  if (count >= maxCount) {
+    checkInBtn.disabled = true;
+  }
+}
+
+window.addEventListener("DOMContentLoaded", loadCounts);
+
 //Form submission
-form.addEventListener("submit", function(event) {
+form.addEventListener("submit", function (event) {
   event.preventDefault(); //Doesn't reload page
+
   //Grabs form values
   const name = attendeeInput.value;
   const team = selectTeam.value;
@@ -17,21 +100,56 @@ form.addEventListener("submit", function(event) {
 
   console.log(name, team, teamName);
 
-  //Increment Count
+  //Increment Count and update the count to attendance
+  const totalAttendees = document.getElementById("attendeeCount");
+
+  if (count >= maxCount) {
+    alert("Maximum number of attendees have been reached!");
+    checkInBtn.disabled = true;
+    const mostMembers = Math.max(
+      parseInt(document.getElementById("waterCount").textContent),
+      parseInt(document.getElementById("zeroCount").textContent),
+      parseInt(document.getElementById("powerCount").textContent),
+    );
+    
+    return;
+  }
+
   count++;
+  totalAttendees.textContent = count;
   console.log("Total Check-ins: ", count);
 
+  if (count === maxCount) {
+    checkInBtn.disabled = true;
+  }
+
   //Update progress bar
-  const percent = Math.round((count / maxCount) * 100)  + "%";
+  const percent = Math.round((count / maxCount) * 100) + "%";
+  progressBar.style.width = percent;
   console.log(`Progress: ${percent}`);
 
   //Update Team count
   const teamCounter = document.getElementById(team + "Count");
   teamCounter.textContent = parseInt(teamCounter.textContent) + 1;
 
+  //Add attendee to team list
+  const teamList = document.getElementById(team + "List");
+  const listName = document.createElement("li");
+  listName.textContent = name;
+  teamList.appendChild(listName);
+
+  saveCounts();
+
   //Show welcome message
-  const message = `Welcome, ${name} from ${team}`;
+  const message = `Welcome, ${name} from ${teamName}!`;
+  greeting.textContent = message;
   console.log(message);
 
+  //When reaching max attendees, show who got the most members
+  const mostMembers = Math.max(
+    parseInt(document.getElementById("waterCount").textContent),
+    parseInt(document.getElementById("zeroCount").textContent),
+    parseInt(document.getElementById("powerCount").textContent),
+  );
   form.reset();
-})
+});
